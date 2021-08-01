@@ -1,0 +1,62 @@
+.main-book-section-wrapper {
+    margin-top: 10%;
+}
+
+.book-img {
+    width: 180px;
+    position: absolute;
+    top: -10px;
+    left: 40px;
+}
+
+.book-title {
+    font-size: 34px;
+    font-weight: bold;
+}
+
+.additional-info {
+    padding-top: 20px;
+    border-top: 1px solid grey;
+    margin-left: 20px;
+    margin-top: 20px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid grey;
+}
+
+.book-title-wrapper {
+    padding-bottom: 20px;
+}
+
+.book-sub-title {
+    font-size: 20px;
+}
+
+.row-item {
+    margin-bottom: 10px;
+}
+
+.circle-bg {
+    height: 250px;
+    width: 250px;
+    background-color: rgb(255, 209, 104);
+    border-radius: 50%;
+    position: relative;
+    top: -10px;
+    z-index: 3;
+}
+
+.title-rating-wrapper {
+    display: flex;
+}
+
+.ratings {
+    align-self: flex-end;
+}
+
+.book-img-wrapper {
+    margin-top: 100px;
+}
+
+.author {
+    text-transform: uppercase;
+}
