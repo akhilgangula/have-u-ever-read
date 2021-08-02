@@ -11,7 +11,7 @@ const HomePage = () => {
             alert("Error");
             return;
         }
-        setSearchResult(items.slice(0,5));
+        setSearchResult(items?.slice(0,5));
 
     }
     return (<>

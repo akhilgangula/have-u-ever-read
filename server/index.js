@@ -75,13 +75,17 @@ app.get("/search", async (req, res) => {
     if (author) searchParams['inauthor'] = author;
     if (title) searchParams['intitle'] = title;
     const customQuery = constructQueryParams(searchParams);
-    console.log(`https://www.googleapis.com/books/v1/volumes?q=${customQuery}${queryParams}`);
     const { data, status } = await axios.get(`https://www.googleapis.com/books/v1/volumes?q=${customQuery}${queryParams}`);
     if (status === httpStatus.OK) {
         return res.status(status).json(data);
     }
     res.status(status).send(data);
+});
 
+app.get("/book/comment/:id", (req, res) => {
+    const { id } = req.params;
+    const dummyData = [{ score: 4.5, id, comment: { header : "Must read", body : "Some random comment goes here!!!" } }]
+    res.send(dummyData);
 });
 
 app.listen(3010, () => {
