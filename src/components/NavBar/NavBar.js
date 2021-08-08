@@ -1,8 +1,16 @@
-import React from "react";
-import { Container, Navbar, Nav, NavDropdown, Form, FormControl } from "react-bootstrap";
+import React, { useContext } from "react";
+import { Container, Navbar, NavDropdown, Form, FormControl, Button } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import "./NavBar.css"
+import { UserContext } from "../../context/userContext";
+
+import LoginModal from "../Login/Login";
 const NavBar = () => {
+    const logOut = (id) => {
+        alert(`Logging out ${id}`);
+    }
+    const userContext = useContext(UserContext);
+    const [modalShow, setModalShow] = React.useState(false);
     return (<>
         <Navbar>
             <Container>
@@ -17,16 +25,22 @@ const NavBar = () => {
                             aria-label="Search"
                         />
                     </Form>
-                    
-                    <NavDropdown title={<>Hello Div</>} id="collasible-nav-dropdown">
-                        <NavDropdown.Item href="#action/3.1">Action</NavDropdown.Item>
-                        <NavDropdown.Item href="#action/3.2">Another action</NavDropdown.Item>
-                        <NavDropdown.Item href="#action/3.3">Something</NavDropdown.Item>
+
+                    {userContext.isLoggedIn && <NavDropdown title={<><img className="avatar avatar-32 bg-light rounded-circle text-white p-1"
+                        src="https://raw.githubusercontent.com/twbs/icons/main/icons/person-fill.svg" /></>} id="collasible-nav-dropdown">
+                        <NavDropdown.Item>Signed In as: <b>{userContext.firstName}</b></NavDropdown.Item>
                         <NavDropdown.Divider />
-                        <NavDropdown.Item href="#action/3.4">Separated link</NavDropdown.Item>
-                    </NavDropdown>
+                        <NavDropdown.Item onClick={() => logOut(userContext.id)}>Logout</NavDropdown.Item>
+                    </NavDropdown>}
+                    {
+                        !userContext.isLoggedIn && <Button variant="link" onClick={() => setModalShow(true)}>
+                            Login / Sign up
+                        </Button>
+                    }
                 </Navbar.Collapse>
             </Container>
+            <LoginModal show={modalShow}
+                onHide={() => setModalShow(false)} />
         </Navbar></>)
 }
 export default NavBar;

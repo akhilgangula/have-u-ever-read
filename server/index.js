@@ -1,98 +1,27 @@
 import express from "express";
 import httpStatus from "http-status";
 import cors from "cors";
-import axios from "axios";
-import isbn from 'node-isbn';
-import { map, reduce } from "lodash";
-import { constructQueryParams } from "./utils/utilityFunctions";
+import bookRoutes from "./routes/book.routes";
+import authorRoutes from './routes/author.routes';
+import recommendationRoute from './routes/recommendation.routes';
+import searchRoute from './routes/search.routes';
+import bodyParser from "body-parser";
+import { PORT } from "./utils/config";
+
 const app = express();
 app.use(cors());
-app.get("/health", (req, res) => res.status(httpStatus.OK).send("OK"));
+app.use(bodyParser.json());
 
-const queryParams = "&key=AIzaSyDuMbGQXe6cb5CnbIpg7rf3V3EYq_uqjGQ&fields=items(volumeInfo, id, selfLink)";
-//service
+app.use('/api/book', bookRoutes);
 
-const getRelaventAuthors = async (author) => {
-    const { data, status } = await axios.get(`https://www.googleapis.com/books/v1/volumes?q=inauthor:${author}${queryParams}`);
-    if (status === httpStatus.OK) {
-        return { data };
-    }
-    return { error: data };
-}
+app.use('/api/author', authorRoutes);
 
-const getBooksByAuthor = async (authorId) => {
-    const { data, status } = await axios.get(`https://openlibrary.org/authors/${authorId}/works.json`);
-    if (status === httpStatus.OK) {
-        return { data };
-    }
-    return { error: data };
-}
+app.use("/api/recommendation", recommendationRoute);
 
+app.use("/api/search", searchRoute);
 
+app.get("/api/health", (req, res) => res.status(httpStatus.OK).send("OK"));
 
-app.get("/book", async (req, res) => {
-    const { data, status } = await axios.get(req.query.selfLink);
-    if (status === httpStatus.OK) {
-        return res.send({ data });
-    }
-    return res.status(httpStatus.BAD_REQUEST).json({ error: data });
-    // isbn.resolve('9781623651435').then(function (book) {
-    //     res.status(httpStatus.OK).json(book);
-    // }).catch(function (err) {
-    //     res.status(httpStatus.BAD_REQUEST).send({ err });
-    // });
-})
-app.get("/author/books/:authorId", async (req, res) => {
-    const { authorId } = req.params;
-    const { data, error } = await getBooksByAuthor(authorId);
-    if (error) {
-        return res.status(httpStatus.BAD_REQUEST).send(error);
-    }
-    res.status(httpStatus.OK).json(data);
-})
-
-app.get("/authors/:author", async (req, res) => {
-    const { author } = req.params;
-    const { data, error } = await getRelaventAuthors(author);
-    if (error) {
-        return res.status(httpStatus.BAD_REQUEST).send(error);
-    }
-    res.status(httpStatus.OK).json(data);
+app.listen(PORT, () => {
+    console.log(`Server started at ${PORT}`);
 });
-
-app.get("/recommendation/:author", async (req, res) => {
-    const { author } = req.params;
-    const { data, status } = await axios.get(`https://openlibrary.org/search.json?q=${author}&_facet=false&_spellcheck_count=0&limit=7&fields=key,cover_i,title,author_name,name&mode=everything`);
-    if (status === httpStatus.OK) {
-        return res.status(status).json(data);
-    }
-    res.status(status).send(data);
-});
-
-app.get("/search", async (req, res) => {
-    const { author, title } = req.query;
-    const searchParams = {};
-    if (author) searchParams['inauthor'] = author;
-    if (title) searchParams['intitle'] = title;
-    const customQuery = constructQueryParams(searchParams);
-    const { data, status } = await axios.get(`https://www.googleapis.com/books/v1/volumes?q=${customQuery}${queryParams}`);
-    if (status === httpStatus.OK) {
-        return res.status(status).json(data);
-    }
-    res.status(status).send(data);
-});
-
-app.get("/book/comment/:id", (req, res) => {
-    const { id } = req.params;
-    const dummyData = [{ score: 4.5, id, comment: { header : "Must read", body : "Some random comment goes here!!!" } }]
-    res.send(dummyData);
-});
-
-app.listen(3010, () => {
-    console.log('Server started');
-})
-
-// https://openlibrary.org/authors/OL6976840A/works.json to get books by author
-
-//https://openlibrary.org/search/authors.json?q=j%20k%20rowling get authors
-

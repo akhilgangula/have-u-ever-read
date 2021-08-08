@@ -1,6 +1,6 @@
 import React from "react";
 import "./MainBookSection.css";
-import { Col, Container, Row } from "react-bootstrap";
+import { Badge, Col, Container, Row } from "react-bootstrap";
 import { map } from "lodash";
 import Rating from "../Ratings/Rating";
 const MainBookSection = ({ volumeInfo: { authors, title,
@@ -11,11 +11,19 @@ const MainBookSection = ({ volumeInfo: { authors, title,
     industryIdentifiers,
     language,
     publishedDate,
-    categories,
+    categories=[],
     publisher,
     pageCount
 },
-}) => <section>
+}) => {
+    const genre = () => {
+        const values = categories.reduce((acc, curr)=>{
+            curr = curr.split(" / ").map(entry => acc.add(entry));
+            return acc;
+        },new Set());
+        return Array.from(values);
+    }
+    return (<section>
         <Container className="main-book-section-wrapper">
             <Row>
                 <Col xs={4}>
@@ -34,10 +42,10 @@ const MainBookSection = ({ volumeInfo: { authors, title,
                                 <div className="ratings"><Rating score={averageRating} /></div>
                             </div>
                             {/* <div className="book-sub-title">{subtitle}</div> */}
-                            <div className="author">by <b>{authors.map((name) => `${name},`)}</b></div>
+                            <div className="author">by <b>{authors.map((name, index) => index === 0 ? name : `, ${name}`)}</b></div>
                         </Container>
                         <Container fluid >
-                            {description}
+                            <div dangerouslySetInnerHTML={{__html: description}}></div>
                         </Container>
                         <Container className="additional-info" fluid>
                             <Row className="row-item">
@@ -62,13 +70,14 @@ const MainBookSection = ({ volumeInfo: { authors, title,
                             </Row>
                             <Row className="row-item">
                                 <Col xs={3}>Category</Col>
-                                <Col>{map(categories, (identifier, index) => index === 0 ? identifier : `, ${identifier}`)}</Col>
+                                <Col>{genre().map(entry => <><Badge bg="primary">{entry}</Badge>{` `}</>)}</Col>
                             </Row>
                         </Container>
                     </div>
                 </Col>
             </Row>
         </Container>
-    </section>;
+    </section>);
+}
 
 export default MainBookSection;

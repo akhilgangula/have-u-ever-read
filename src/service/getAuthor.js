@@ -1,16 +1,16 @@
 import axios from "axios"
 import httpStatus from "http-status";
-export const getRelatedAuthors = async () => {
-    const { data, status } = await axios.get(`http://localhost:3010/authors/${encodeURI("Amish Tripathi")}`);
+export const getRelatedAuthors = async ({id}) => {
+    const { data, status } = await axios.get(`http://localhost:3010/api/authors/${encodeURI(id)}`);
     if (status === httpStatus.OK) {
-        return data;
+        return { data };
     } else {
         return { error: data };
     }
 }
 
 export const getWorkByAuthor = async () => {
-    const { data, status } = await axios.get("http://localhost:3010/author/books/OL6976840A");
+    const { data, status } = await axios.get("http://localhost:3010/api/author/books/OL6976840A");
     if (status === httpStatus.OK) {
         return data;
     } else {

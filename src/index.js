@@ -1,18 +1,21 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
-import App from './App';
 import reportWebVitals from './reportWebVitals';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import Routes from './routes';
 import BasicLayout from './Layout/Basic';
 import { BrowserRouter as Router } from 'react-router-dom';
+import UserContextProvider from './providers/userContextProvider';
+
 ReactDOM.render(
   <React.StrictMode>
     <Router>
-      <BasicLayout>
-        <Routes />
-      </BasicLayout>
+      <UserContextProvider>
+        <BasicLayout>
+          <Routes />
+        </BasicLayout>
+      </UserContextProvider>
     </Router>
   </React.StrictMode>,
   document.getElementById('root')

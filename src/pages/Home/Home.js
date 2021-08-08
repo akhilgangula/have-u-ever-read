@@ -16,13 +16,16 @@ const HomePage = () => {
     }
     return (<>
         <Container>
+            <Row className="justify-content-md-center">
+                <Col xs={6}><h3 style={{textAlign: "center"}}>Have You Ever Read</h3></Col>
+            </Row>
             <Row className="justify-content-md-center" style={{ marginTop: "120px" }}>
                 <Col xs={6}>
                     <InputGroup className="mb-3" >
                         <FormControl
                             aria-label="Default"
                             aria-describedby="inputGroup-sizing-default"
-                            placeholder="Search..."
+                            placeholder="Start typing..."
                             onChange={({ target: { value } }) => search(value)}
                         />
                     </InputGroup>
