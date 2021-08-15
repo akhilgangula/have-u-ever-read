@@ -1,5 +1,6 @@
 import axios from "axios";
 import httpStatus from "http-status";
+import { getUser } from "../service/user.service";
 import store from "../data/store";
 
 export const getBookByLink = async (selfLink) => {
@@ -10,8 +11,8 @@ export const getBookByLink = async (selfLink) => {
     return { error: data };
 }
 
-export const addComments = ({ bookId, commentId, userId, ratings, comment }) => {
-    const data = store.addData({ bookId, userId, comment, commentId, ratings });
+export const addComments = ({ id, commentId, userId, ratings, comment, title }) => {
+    const data = store.addData(id, { bookId: id, userId, comment, commentId, ratings, title });
     return { data };
 }
 

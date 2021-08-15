@@ -1,11 +1,22 @@
-import React, { useContext } from "react";
+import React, { useContext, useEffect } from "react";
 import { Container, Navbar, NavDropdown, Form, FormControl, Button } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import "./NavBar.css"
 import { UserContext } from "../../context/userContext";
 
 import LoginModal from "../Login/Login";
+import { autoLogin } from "../../service/userService";
+import ProfilePhoto from "../ProfilePhoto";
 const NavBar = () => {
+    useEffect(() => {
+        const callback = async () => {
+            const { data, error } = await autoLogin();
+            if (!error) {
+                userContext.logIn(data);
+            }
+        }
+        callback();
+    }, []);
     const logOut = (id) => {
         alert(`Logging out ${id}`);
     }
@@ -26,8 +37,7 @@ const NavBar = () => {
                         />
                     </Form>
 
-                    {userContext.isLoggedIn && <NavDropdown title={<><img className="avatar avatar-32 bg-light rounded-circle text-white p-1"
-                        src="https://raw.githubusercontent.com/twbs/icons/main/icons/person-fill.svg" /></>} id="collasible-nav-dropdown">
+                    {userContext.isLoggedIn && <NavDropdown title={<><ProfilePhoto /></>} id="collasible-nav-dropdown">
                         <NavDropdown.Item>Signed In as: <b>{userContext.firstName}</b></NavDropdown.Item>
                         <NavDropdown.Divider />
                         <NavDropdown.Item onClick={() => logOut(userContext.id)}>Logout</NavDropdown.Item>

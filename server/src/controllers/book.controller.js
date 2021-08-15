@@ -18,7 +18,7 @@ export const getComments = async (req, res) => {
 }
 
 export const addComments = async (req, res) => {
-    const { bookId, commentId, userId, ratings, comment } = req.body;
-    const { data } = addCommentsService({ bookId, commentId, userId, ratings, comment });
+    const { bookId: id, userId, commentId, comment, rating, title } = req.body;
+    const { data } = addCommentsService({ id, commentId, userId, rating, comment, title });
     res.send(data);
 }

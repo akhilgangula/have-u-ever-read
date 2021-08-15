@@ -1,12 +1,45 @@
 import React, { useState, useContext } from 'react';
-import { Modal, Button, Form, Container } from "react-bootstrap";
+import { Modal, Button, Form, Container, Col, Row } from "react-bootstrap";
 import { GoogleLogin } from 'react-google-login';
 import { UserContext } from '../../context/userContext';
+import { createUser, getUser, validate } from '../../service/userService';
+import { createRandomId } from '../../utils/utilityFunctions';
 function LoginModal(props) {
     const userContext = useContext(UserContext);
     const [key, setKey] = useState(false); // false = login page / otherwise signup
-    const responseGoogle = ({ profileObj: { email, familyName, givenName, imageUrl, name, googleId } }) => {
-        userContext.logIn({ email, lastName: familyName, firstName: givenName, imageUrl, name, id: googleId });
+    const [userName, setUserName] = useState("");
+    const [password, setPassword] = useState("");
+    const [reTypePassword, setReTypePassword] = useState("");
+    const [firstName, setFirstName] = useState("");
+    const [lastName, setLastName] = useState("");
+    const login = async () => {
+        const { data, error } = await validate(userName, password);
+        if (error) {
+            alert("login Failed");
+            return;
+        }
+        userContext.logIn(data);
+        props.onHide();
+    }
+    const responseGoogle = async ({ profileObj: { email, familyName, givenName, imageUrl, name, googleId } }) => {
+        const { error } = await getUser(googleId);
+        if (error) {
+            const { error: userCreationError } = await createUser({ email, lastName: familyName, firstName: givenName, imageUrl, userId: googleId });
+            if (userCreationError) {
+                alert("User Not found and creation of user failed");
+            }
+            return;
+        }
+        userContext.logIn({ email, lastName: familyName, firstName: givenName, imageUrl, name, userId: googleId });
+        props.onHide();
+    }
+    const signUp = async () => {
+        const { data, error } = await createUser({ email: userName, lastName, firstName, imageUrl: undefined, userId: createRandomId() });
+        if (error) {
+            alert("Signup Failed");
+            return;
+        }
+        userContext.logIn(data);
         props.onHide();
     }
     return (
@@ -35,34 +68,48 @@ function LoginModal(props) {
                     {!key && <Form>
                         <Form.Group className="mb-3" controlId="formBasicEmail">
                             <Form.Label>Email address</Form.Label>
-                            <Form.Control type="email" placeholder="Enter email" />
+                            <Form.Control type="email" placeholder="Enter email" onChange={({ target: { value } }) => setUserName(value)} value={userName} />
                         </Form.Group>
 
                         <Form.Group className="mb-3" controlId="formBasicPassword">
                             <Form.Label>Password</Form.Label>
-                            <Form.Control type="password" placeholder="Password" />
+                            <Form.Control type="password" placeholder="Password" onChange={({ target: { value } }) => setPassword(value)} value={password} />
                         </Form.Group>
-                        <Button variant="primary" type="submit">
+                        <Button variant="primary" onClick={login}>
                             Submit
                         </Button>
                         <Button variant="link" onClick={() => setKey(true)}>Don't have an account?</Button>
                     </Form>}
                     {
                         key && <Form>
+                            <Row>
+                                <Col>
+                                    <Form.Group className="mb-3" controlId="firstName">
+                                        <Form.Label>First Name</Form.Label>
+                                        <Form.Control placeholder="First name" onChange={({ target: { value } }) => setFirstName(value)} value={firstName} />
+                                    </Form.Group>
+                                </Col>
+                                <Col>
+                                    <Form.Group className="mb-3" controlId="lastName">
+                                        <Form.Label>Last Name</Form.Label>
+                                        <Form.Control placeholder="Last name" onChange={({ target: { value } }) => setLastName(value)} value={lastName} />
+                                    </Form.Group>
+                                </Col>
+                            </Row>
                             <Form.Group className="mb-3" controlId="formBasicEmail">
                                 <Form.Label>Email address</Form.Label>
-                                <Form.Control type="email" placeholder="Enter email" />
+                                <Form.Control type="email" placeholder="Enter email" onChange={({ target: { value } }) => setUserName(value)} value={userName} />
                             </Form.Group>
 
                             <Form.Group className="mb-3" controlId="formBasicPassword">
                                 <Form.Label>Password</Form.Label>
-                                <Form.Control type="password" placeholder="Password" />
+                                <Form.Control type="password" placeholder="Password" onChange={({ target: { value } }) => setPassword(value)} value={password} />
                             </Form.Group>
                             <Form.Group className="mb-3" controlId="formBasicPassword">
                                 <Form.Label>Retype Password</Form.Label>
-                                <Form.Control type="password" placeholder="Re-type Password" />
+                                <Form.Control type="password" placeholder="Re-type Password" onChange={({ target: { value } }) => setReTypePassword(value)} value={reTypePassword} />
                             </Form.Group>
-                            <Button variant="primary" type="submit">
+                            <Button variant="primary" onClick={signUp}>
                                 Submit
                             </Button>
                             <Button variant="link" onClick={() => setKey(false)}>Already a member?</Button>

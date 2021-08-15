@@ -1,7 +1,7 @@
 import axios from "axios"
 import httpStatus from "http-status";
 export const getRelatedAuthors = async ({id}) => {
-    const { data, status } = await axios.get(`http://localhost:3010/api/authors/${encodeURI(id)}`);
+    const { data, status } = await axios.get(`http://localhost:3010/api/author/${encodeURI(id)}`);
     if (status === httpStatus.OK) {
         return { data };
     } else {

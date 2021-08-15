@@ -2,15 +2,16 @@ class DataStore {
     constructor() {
         this.data = {};
     }
-    getData(bookId) {
-        return this.data[bookId];
+    getData(id) {
+        return this.data[id];
     }
-    addData({ bookId, userId, comment, commentId, ratings }) {
-        if(!this.data[bookId]) {
-            this.data[bookId] = [];
+    addData(id, data) {
+        if(!this.data[id]) {
+            this.data[id] = [];
         }
-        this.data[bookId].push({ userId, comment, commentId, ratings });
-        return this.data[bookId];
+        this.data[id].push(data);
+        console.log(this.data);
+        return this.data[id];
     }
     clearData() {
         this.data = {};
@@ -21,7 +22,7 @@ export default store;
 
 /**
  * data = {
- *      bookId: [
+ *      id: [
  *          {
  *          userId:
  *          commentId:
